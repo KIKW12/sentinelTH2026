@@ -1,30 +1,50 @@
-# Sentinel API Backend
+# Sentinel Backend
 
-FastAPI backend for the Sentinel security scanner.
+This is the Python backend for Sentinel, handling API requests and running the async worker agents.
 
 ## Setup
 
-```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
+1.  **Environment Variables**:
+    Copy `.env.example` to `.env` and fill in your Supabase credentials:
+    ```bash
+    cp .env.example .env
+    ```
 
-# Install dependencies
-pip install -r requirements.txt
+    - Get `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` from your Supabase Project Settings > API.
+
+2.  **Install Dependencies**:
+    ```bash
+    pip install -r requirements.txt
+    playwright install chromium
+    ```
+
+## Usage
+
+You need to run TWO processes in separate terminals:
+
+### 1. Control Plane (Flask API)
+Starts the API server at `http://localhost:5000`.
+
+```bash
+python app.py
 ```
 
-## Run
+### 2. Execution Plane (Worker)
+Starts the worker loop that polls for queued runs and launches agents.
 
 ```bash
-# Development mode with auto-reload
-uvicorn main:app --reload --port 8000
-
-# Or using Python directly
-python main.py
+python worker.py
 ```
 
-## API Docs
+## triggering a Run (Curl)
 
-Once running, visit:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
+Once both are running, you can trigger a scan:
+
+```bash
+curl -X POST http://localhost:5000/runs/start \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target_url": "https://example.com",
+    "agents": ["exposure", "headers_tls"]
+  }'
+```
