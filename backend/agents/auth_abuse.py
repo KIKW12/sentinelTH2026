@@ -28,29 +28,22 @@ class AuthAbuseAgent(BaseAgent):
                      return
 
                 await self.update_progress(30)
-                await self.emit_event("WARNING", f"Found login form with {len(password_inputs)} password fields.")
+                await self.emit_event("INFO", f"Found login form with {len(password_inputs)} password fields.")
                 
-                # Report finding
+                # Report finding (INFO only - seeing a login form is not a vulnerability)
                 await self.report_finding(
                         severity="INFO",
                         title="Login Form Detected",
-                        evidence=f"Login form found at {self.target_url}",
-                        recommendation="Ensure rate limiting and MFA are enabled."
+                        evidence=f"Login form with password fields found at {self.target_url}",
+                        recommendation="Ensure that the login endpoint implements rate limiting, brute-force protection, and multi-factor authentication (MFA)."
                     )
 
                 # Simulate Brutes (SAFE MODE - just typing, not submitting heavy load)
-                await self.emit_event("INFO", "Testing for weak password policy (Simulation)...")
+                await self.emit_event("INFO", "Performing non-intrusive authentication analysis...")
                 await asyncio.sleep(1)
                 await self.update_progress(50)
                 
-                # Mock finding for demo purposes
-                if "login" in self.target_url or "signin" in self.target_url:
-                     await self.report_finding(
-                        severity="HIGH",
-                        title="Weak Password Policy",
-                        evidence="Application accepts 'password123' as a valid password format (Simulation).",
-                        recommendation="Enforce complexity requirements (length, special chars)."
-                    )
+                # (Removed simulated 'Weak Password Policy' finding to reduce false positives)
 
                 await self.update_progress(80)
                 await self.emit_event("SUCCESS", "Auth abuse scan completed.")

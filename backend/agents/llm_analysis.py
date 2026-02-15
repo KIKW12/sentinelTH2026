@@ -35,39 +35,58 @@ class LLMAnalysisAgent(BaseAgent):
                 await self.update_progress(40)
 
                 prompt = f"""
-                You are an expert offensive security engineer. Analyze the following web page text for:
-                1. Business Logic Flaws (e.g. "Buy for $0", "Admin link exposed")
-                2. PII Leaks (Emails, Phone numbers, API Keys)
-                3. Suspicious code comments or debug info.
+                You are a Senior Security Engineer at a top-tier technology company (like Google or Amazon).
+                Your goal is to perform a high-signal security analysis of the provided web page content.
+
+                ### Instructions:
+                1. Analyze the page for genuine security vulnerabilities, focusing on:
+                   - Business Logic Flaws: e.g., price manipulation, unintended access to sensitive data, exposed internal-only links.
+                   - Sensitive Data Exposure (PII/Secrets): Look for exposed API keys, private emails (not support contact), phone numbers in debug logs, etc.
+                   - Information Leakage: Suspicious developer comments, stack traces, or debug information.
+                2. DO NOT flag standard, expected security practices or common public-facing features such as:
+                   - Normal login or registration forms.
+                   - Standard "Admin" or "Dashboard" links that are expected for authenticated users.
+                   - Publicly available support contact information.
+                3. Be conservative with severity levels. Only use HIGH or CRITICAL if there is clear evidence of an exploitable vulnerability.
+
+                ### Output Format:
+                Return a JSON object with a list of "findings". Each finding MUST include:
+                - severity: (LOW, MEDIUM, HIGH, CRITICAL)
+                - title: A concise, professional title.
+                - evidence: The specific snippet or observation from the page content.
+                - justification: A brief explanation of WHY this is a security risk and not a normal feature.
+                - recommendation: Actionable steps for the development team.
+
+                If no high-signal issues are found, return an empty list.
+                JSON Format: {{ "findings": [ {{ "severity": "...", "title": "...", "evidence": "...", "justification": "...", "recommendation": "..." }} ] }}
                 
                 Target URL: {self.target_url}
                 
                 Page Content:
                 {content}
-                
-                Return a JSON object with a list of "findings". 
-                Each finding should have: severity (LOW, MEDIUM, HIGH, CRITICAL), title, evidence, recommendation.
-                If nothing found, return empty list.
-                JSON Format: {{ "findings": [ ... ] }}
                 """
 
                 response = await self.client.chat.completions.create(
                     model="gpt-4o",
-                    messages=[{"role": "user", "content": prompt}],
+                    messages=[
+                        {"role": "system", "content": "You are a professional security auditor focusing on high-signal findings."},
+                        {"role": "user", "content": prompt}
+                    ],
                     response_format={"type": "json_object"}
                 )
                 
                 result = json.loads(response.choices[0].message.content)
                 findings = result.get("findings", [])
                 
-                await self.emit_event("INFO", f"LLM Analysis complete. Found {len(findings)} potential issues.")
+                await self.emit_event("INFO", f"LLM Analysis complete. Found {len(findings)} high-signal issues.")
                 await self.update_progress(80)
 
                 for f in findings:
+                    combined_evidence = f"Justification: {f.get('justification', 'N/A')}\n\nEvidence: {f['evidence']}"
                     await self.report_finding(
                         severity=f['severity'],
                         title=f['title'],
-                        evidence=f['evidence'],
+                        evidence=combined_evidence,
                         recommendation=f['recommendation']
                     )
 
