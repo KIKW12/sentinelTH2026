@@ -22,9 +22,8 @@ class ExposureAgent(BaseAgent):
                 title = await page.title()
                 await self.emit_event("INFO", f"Page Title: {title}")
                 
-                # Check 1: Sensitive Headers / Admin Panels
-                # (Removed naive keyword check for 'admin' and 'dashboard' to reduce false positives)
-                # LLMAnalysisAgent handles more complex logic-based exposure checks.
+                # Visual Scan
+                await self.scroll_and_capture(page, "Exposure Scan")
                 
                 await self.update_progress(50)
                 

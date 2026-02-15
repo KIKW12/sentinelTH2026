@@ -52,7 +52,7 @@ AGENT_MAP = {
 }
 
 # Agents that require Playwright (should use Modal in production)
-PLAYWRIGHT_AGENTS = ["exposure", "auth_abuse", "llm_analysis", "red_team"]
+PLAYWRIGHT_AGENTS = ["exposure", "auth_abuse", "llm_analysis", "red_team", "xss", "sqli"]
 
 async def process_run(run_id: str, target_url: str):
     print(f"Processing Run: {run_id} for {target_url}")
