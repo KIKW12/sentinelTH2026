@@ -8,6 +8,5 @@ aiohttp
 openai
 beautifulsoup4
 pytest
-fastapi
-uvicorn
-pydantic
+gunicorn
+modal
