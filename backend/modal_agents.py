@@ -131,18 +131,11 @@ async def run_headers_agent(run_id: str, session_id: str, target_url: str):
 
 
 @app.function(
-    image=modal.Image.debian_slim(python_version="3.11").pip_install(
-        "aiohttp",
-        "beautifulsoup4",
-        "supabase",
-        "python-dotenv"
-    )
-    .add_local_dir("agents", remote_path="/root/agents")
-    .add_local_file("db.py", remote_path="/root/db.py"),
+    image=image,
     secrets=[secrets],
-    timeout=300,
-    cpu=1.0,
-    memory=512
+    timeout=600,
+    cpu=2.0,
+    memory=2048
 )
 async def run_sqli_agent(run_id: str, session_id: str, target_url: str):
     """Run SQLiAgent on Modal"""
@@ -154,18 +147,11 @@ async def run_sqli_agent(run_id: str, session_id: str, target_url: str):
 
 
 @app.function(
-    image=modal.Image.debian_slim(python_version="3.11").pip_install(
-        "aiohttp",
-        "beautifulsoup4",
-        "supabase",
-        "python-dotenv"
-    )
-    .add_local_dir("agents", remote_path="/root/agents")
-    .add_local_file("db.py", remote_path="/root/db.py"),
+    image=image,
     secrets=[secrets],
-    timeout=300,
-    cpu=1.0,
-    memory=512
+    timeout=600,
+    cpu=2.0,
+    memory=2048
 )
 async def run_xss_agent(run_id: str, session_id: str, target_url: str):
     """Run XSSAgent on Modal"""

@@ -56,10 +56,15 @@ class RedTeamAgent(BaseAgent):
                 
                 if action['tool'] == 'finish':
                     await self.emit_event("SUCCESS", f"Mission Complete: {action.get('reason', 'Done')}")
+                    await self.save_screenshot(self.page, "Final State")
                     break
                 
                 await self._execute_tool(action)
                 
+                # Periodic screenshot to show progress
+                if step % 2 == 0:
+                    await self.save_screenshot(self.page, f"Exploration Step {step}")
+
                 # Report if interesting
                 if action.get('finding'):
                     await self.report_finding(
