@@ -1,12 +1,20 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { Shield, ArrowRight, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { checkHealth } from "@/apis/health";
 
 export default function Home() {
   const router = useRouter();
+  const [apiStatus, setApiStatus] = useState<"checking" | "healthy" | "error">("checking");
+
+  useEffect(() => {
+    checkHealth()
+      .then(() => setApiStatus("healthy"))
+      .catch(() => setApiStatus("error"));
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -23,8 +31,16 @@ export default function Home() {
           <h1 className="text-5xl font-bold mb-4">SENTINEL</h1>
           <p className="text-xl text-zinc-400">Multi-Agent Security Scanner</p>
           <p className="text-zinc-500 mt-4 max-w-md mx-auto">
-            Deploy parallel AI agents to analyze your application&apos;s security posture
+            Deploy parallel AI agents to analyze your application's security posture
           </p>
+        </div>
+
+        {/* API Status */}
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <Activity className={`h-4 w-4 ${apiStatus === "healthy" ? "text-green-500" : apiStatus === "error" ? "text-red-500" : "text-yellow-500"}`} />
+          <span className="text-zinc-400">
+            API: {apiStatus === "healthy" ? "Connected" : apiStatus === "error" ? "Disconnected" : "Checking..."}
+          </span>
         </div>
 
         {/* Navigate Button */}
