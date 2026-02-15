@@ -1,15 +1,24 @@
 import asyncio
 import time
 from db import supabase
-from agents.openclaw import OpenClawAgent
-# from agents.nuclei import NucleiAgent # Future
+from agents.exposure import ExposureAgent
+from agents.headers import HeadersAgent
+from agents.auth_abuse import AuthAbuseAgent
+from agents.llm_analysis import LLMAnalysisAgent
+from agents.sqli import SQLiAgent
+from agents.xss import XSSAgent
+from agents.red_team import RedTeamAgent
 
 # Mapping string agent_type to Class
 AGENT_MAP = {
-    "exposure": OpenClawAgent, # Using OpenClaw logic for exposure
-    "headers_tls": OpenClawAgent, # Reusing for now or specific class
-    "auth_abuse": OpenClawAgent,
-    "openclaw": OpenClawAgent
+    "exposure": ExposureAgent,
+    "headers_tls": HeadersAgent,
+    "auth_abuse": AuthAbuseAgent,
+    "llm_analysis": LLMAnalysisAgent,
+    "sqli": SQLiAgent,
+    "xss": XSSAgent,
+    "red_team": RedTeamAgent,
+    "custom": ExposureAgent
 }
 
 async def process_run(run_id: str, target_url: str):
@@ -19,17 +28,19 @@ async def process_run(run_id: str, target_url: str):
     supabase.table('security_runs').update({"status": "RUNNING", "started_at": "now()"}).eq("id", run_id).execute()
 
     # 2. Fetch Queued Sessions
-    sessions = supabase.table('agent_sessions').select("*").eq("run_id", run_id).eq("status", "QUEUED").execute()
+    sessions_response = supabase.table('agent_sessions').select("*").eq("run_id", run_id).eq("status", "QUEUED").execute()
+    sessions_data = sessions_response.data
+    print(f"DEBUG: Found {len(sessions_data)} sessions for run {run_id}")
     
     tasks = []
     
     # 3. Launch Agents
-    for session in sessions.data:
+    for session in sessions_data:
         agent_type = session['agent_type']
         session_id = session['id']
         
-        # Use OpenClawAgent as default fallback if type not found
-        AgentClass = AGENT_MAP.get(agent_type, OpenClawAgent)
+        # Use ExposureAgent as default fallback if type not found
+        AgentClass = AGENT_MAP.get(agent_type, ExposureAgent)
         
         agent_instance = AgentClass(run_id, session_id, target_url)
         tasks.append(agent_instance.run()) # buffer the coroutine

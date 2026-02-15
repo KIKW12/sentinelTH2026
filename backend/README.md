@@ -30,7 +30,7 @@ python app.py
 ```
 
 ### 2. Execution Plane (Worker)
-Starts the worker loop that polls for queued runs and launches agents.
+Starts the worker loop that polls for queued runs and launches agents (Exposure, Headers, etc.).
 
 ```bash
 python worker.py

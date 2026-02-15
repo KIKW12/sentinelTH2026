@@ -19,10 +19,10 @@ def start_run():
     if not target_url:
         return jsonify({"error": "target_url is required"}), 400
 
-    # 1. Create Run
+    # 1. Create Run (INITIALIZING to prevent worker race condition)
     run_data = {
         "target_url": target_url,
-        "status": "QUEUED"
+        "status": "INITIALIZING"
     }
     
     try:
@@ -39,6 +39,9 @@ def start_run():
             })
         
         supabase.table('agent_sessions').insert(sessions).execute()
+
+        # 3. Mark Run as QUEUED (Now worker can pick it up)
+        supabase.table('security_runs').update({"status": "QUEUED"}).eq("id", run_id).execute()
         
         return jsonify({"run_id": run_id, "status": "QUEUED"}), 201
 
