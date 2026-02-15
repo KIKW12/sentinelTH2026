@@ -23,28 +23,31 @@ class ExposureAgent(BaseAgent):
                 await self.emit_event("INFO", f"Page Title: {title}")
                 
                 # Check 1: Sensitive Headers / Admin Panels
-                content = await page.content()
-                
-                if "admin" in content.lower() or "dashboard" in content.lower():
-                     await self.report_finding(
-                        severity="MEDIUM",
-                        title="Potential Admin Panel Exposed",
-                        evidence=f"Found 'admin' or 'dashboard' keyword in page content.",
-                        recommendation="Ensure admin panels are behind VPN or strict auth."
-                    )
+                # (Removed naive keyword check for 'admin' and 'dashboard' to reduce false positives)
+                # LLMAnalysisAgent handles more complex logic-based exposure checks.
                 
                 await self.update_progress(50)
                 
-                # Check 2: Unsecured Forms
+                # Check 2: Unsecured Forms / CSRF
                 forms = await page.query_selector_all("form")
                 if forms:
-                    await self.emit_event("INFO", f"Found {len(forms)} forms. Analyzing security...")
-                    await self.report_finding(
-                        severity="LOW",
-                        title="Unsecured Form Detected",
-                        evidence=f"Form found at {self.target_url}. Validate CSRF tokens.",
-                        recommendation="Implement Anti-CSRF tokens for all state-changing forms."
-                    )
+                    await self.emit_event("INFO", f"Found {len(forms)} forms. Analyzing for CSRF protection...")
+                    for form in forms:
+                        # Simple heuristic: look for common CSRF token names in hidden inputs
+                        # We use a case-insensitive match for 'csrf' or 'token' in the name
+                        has_csrf = await form.evaluate("""form => {
+                            const inputs = Array.from(form.querySelectorAll("input[type='hidden']"));
+                            return inputs.some(i => i.name.toLowerCase().includes('csrf') || i.name.toLowerCase().includes('token'));
+                        }""")
+
+                        if not has_csrf:
+                            await self.report_finding(
+                                severity="LOW",
+                                title="Potential Missing CSRF Protection",
+                                evidence=f"Form at {self.target_url} appears to lack a hidden CSRF token field.",
+                                recommendation="Ensure all state-changing forms implement Anti-CSRF tokens. If using header-based protection (e.g., in SPAs), ensure it is correctly enforced on the backend."
+                            )
+                            break # Only report once per page to minimize noise
                 
                 await self.update_progress(90)
                 await self.emit_event("SUCCESS", "Scan completed successfully.")
