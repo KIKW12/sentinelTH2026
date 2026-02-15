@@ -10,3 +10,4 @@ beautifulsoup4
 pytest
 gunicorn
 modal
+google-genai
