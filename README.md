@@ -1,137 +1,354 @@
-# Sentinel — AI-Powered Autonomous Security Scanner
+<div align="center">
 
-## Inspiration
+# 🛡️ SENTINEL
 
-The idea for Sentinel was born out of a simple frustration: **penetration testing is expensive, slow, and inaccessible.** Hiring a professional pen tester can cost thousands of dollars and take weeks to schedule, leaving small teams and indie developers with no way to know if their apps are actually secure — or just *hoping* they are.
+### AI-Powered Autonomous Security Scanner
 
-We asked ourselves: *what if an AI could do what a junior pen tester does, but in minutes instead of days?*
+**Deploy a swarm of 10 AI agents to find vulnerabilities in your web app — before attackers do.**
 
-The rise of large language models gave us the missing piece. Traditional automated scanners (like Nmap, Nikto, or OWASP ZAP) are powerful but rigid — they run predefined checks and can't *reason* about what they find. A real pen tester doesn't just scan headers; they look at the results, form a hypothesis, and decide what to probe next. We wanted to build that feedback loop — an agent that **observes, thinks, and acts** — powered by AI.
+[![Built at TreeHacks](https://img.shields.io/badge/Built%20at-TreeHacks%202026-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyTDIgN2w1IDUgNS01IDUtNSA1IDV6Ii8+PC9zdmc+)](https://www.treehacks.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js)](https://nextjs.org)
+[![Gemini](https://img.shields.io/badge/Gemini-2.0--flash-4285f4?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Supabase](https://img.shields.io/badge/Supabase-Realtime-3ecf8e?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
 
-That intersection of cybersecurity and autonomous AI agents is what inspired Sentinel.
+<br/>
 
-## What It Does
+*Traditional scanners check boxes. Sentinel **thinks**.*
 
-Sentinel is a full-stack security platform that deploys a swarm of **10 specialized AI agents** against a target URL, each responsible for a different attack surface:
+</div>
 
-| Agent | Role |
-|---|---|
-| 🕷️ **Spider** | Crawls the site to map the full attack surface |
-| 🔍 **Exposure** | Detects leaked secrets, API keys, and sensitive files |
-| 🛡️ **Headers & TLS** | Audits HTTP security headers and TLS configuration |
-| 🌐 **CORS** | Tests Cross-Origin Resource Sharing misconfigurations |
-| 🔌 **Port Scan** | Probes open ports and services |
-| 🔐 **Auth Abuse** | Tests authentication and authorization bypass |
-| 💉 **SQLi** | Attempts SQL injection attacks |
-| ⚡ **XSS** | Tests for Cross-Site Scripting vulnerabilities |
-| 🤖 **Red Team** | LLM-powered autonomous pen tester with browser control |
-| 🧠 **LLM Analysis** | AI-driven contextual analysis of discovered data |
+---
 
-The agents run concurrently on the backend, report findings to a shared database in real-time, and the results are synthesized into a **Gemini-powered remediation report** — complete with risk grades, code-level fix instructions, and OWASP references.
+## ⚡ The Problem
 
-### The Risk Score
+Penetration testing is **expensive** ($5K–$30K per engagement), **slow** (weeks to schedule), and **inaccessible** to indie developers, startups, and small teams. Meanwhile, automated scanners run rigid, predefined checks — they can't *reason* about what they find.
 
-Each finding is weighted by severity, producing a composite risk score $S$ and letter grade:
+**Sentinel bridges the gap.** It combines the systematic coverage of automated scanning with the adaptive reasoning of a human pen tester — powered by LLMs that observe, think, and act.
+
+---
+
+## 🧬 How It Works
+
+Sentinel deploys a coordinated **swarm of 10 specialized AI agents** against your target, each attacking a different surface. Agents run concurrently, share reconnaissance data, and report findings in real-time.
+
+```
+                                 ┌──────────────────────────────────┐
+                                 │         SENTINEL ENGINE          │
+                                 │                                  │
+   ┌──────────┐    ┌─────────┐   │  Phase 1 ─ Recon                │
+   │  Target  │───►│  Flask  │──►│  └── 🕷️  Spider Agent            │
+   │   URL    │    │   API   │   │                                  │
+   └──────────┘    └────┬────┘   │  Phase 2 ─ Concurrent Scanners  │
+                        │        │  ├── 🔍 Exposure   ├── 🌐 CORS  │
+   ┌──────────┐    ┌────▼────┐   │  ├── 🛡️  Headers   ├── 🔌 Ports │
+   │  Next.js │◄───│Supabase │◄──│  ├── 💉 SQLi      ├── ⚡ XSS   │
+   │   Live   │    │Realtime │   │  └── 🔐 Auth Abuse              │
+   │Dashboard │    └─────────┘   │                                  │
+   └──────────┘                  │  Phase 3 ─ AI Deep Analysis     │
+                                 │  ├── 🤖 Red Team (Autonomous)   │
+                                 │  └── 🧠 LLM Analysis            │
+                                 │                                  │
+                                 │  ══════════════════════════════  │
+                                 │  📊 Gemini Remediation Report   │
+                                 └──────────────────────────────────┘
+```
+
+---
+
+## 🤖 The Agent Swarm
+
+<table>
+<tr>
+<td width="50%">
+
+### 🕷️ Spider Agent
+Crawls the target to **map the full attack surface** — pages, forms, API endpoints, JavaScript files, and linked resources. Feeds recon data to all downstream agents.
+
+### 🔍 Exposure Agent
+Hunts for **leaked secrets**: exposed `.env` files, API keys in JavaScript, directory listings, `.git` folders, backup files, and sensitive endpoints like `/wp-admin`.
+
+### 🛡️ Headers & TLS Agent
+Audits every HTTP security header (`CSP`, `HSTS`, `X-Frame-Options`, etc.) and evaluates the **TLS configuration** — cipher suites, certificate validity, and protocol versions.
+
+### 🌐 CORS Agent
+Probes **Cross-Origin Resource Sharing** policies for dangerous misconfigurations: wildcard origins, null origin reflection, credential exposure, and subdomain trust issues.
+
+### 🔌 Port Scan Agent
+Discovers **open ports and services** on the target host, fingerprinting running software and flagging unnecessary exposed services that expand the attack surface.
+
+</td>
+<td width="50%">
+
+### 🔐 Auth Abuse Agent
+Tests **authentication and authorization** boundaries: brute-force protections, session fixation, IDOR vulnerabilities, privilege escalation, and JWT misconfigurations.
+
+### 💉 SQLi Agent
+Attempts **SQL injection** across all discovered input vectors — URL parameters, form fields, cookies, and headers — using both error-based and blind injection techniques.
+
+### ⚡ XSS Agent
+Tests for **Cross-Site Scripting** with payload injection across reflected, stored, and DOM-based contexts. Verifies findings by confirming actual script execution in the DOM.
+
+### 🤖 Red Team Agent
+The crown jewel — an **autonomous AI pen tester** with full browser control via Playwright. Uses Gemini to run an observe → think → act loop, deciding which tools to invoke (click, type, JS execution, API calls, screenshots) in real-time.
+
+### 🧠 LLM Analysis Agent
+Performs **contextual AI analysis** of all collected data — discovering patterns, chaining low-severity findings into high-impact attack paths, and identifying logic flaws that traditional scanners miss.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📊 Risk Scoring
+
+Every finding is severity-weighted to produce a composite security score and letter grade:
+
+<div align="center">
 
 $$S = \max\!\Big(0,\;\; 100 - \sum_{i=1}^{n} w(s_i)\Big)$$
 
-where the weight function $w$ maps severity levels to penalty points:
+| Severity | Penalty | Example |
+|:---:|:---:|:---|
+| 🔴 **CRITICAL** | **−25** | Remote Code Execution, SQL Injection with data exfil |
+| 🟠 **HIGH** | **−10** | Stored XSS, Authentication Bypass |
+| 🟡 **MEDIUM** | **−3** | Missing CSP, Insecure CORS |
+| 🟢 **LOW** | **−1** | Missing `X-Content-Type-Options` |
 
-$$w(s) = \begin{cases} 25 & \text{if } s = \texttt{CRITICAL} \\ 10 & \text{if } s = \texttt{HIGH} \\ 3 & \text{if } s = \texttt{MEDIUM} \\ 1 & \text{if } s = \texttt{LOW} \end{cases}$$
+| Grade | Score Range | Meaning |
+|:---:|:---:|:---|
+| **A** | 90 – 100 | Excellent — minimal risk |
+| **B** | 75 – 89 | Good — minor issues |
+| **C** | 50 – 74 | Moderate — action needed |
+| **D** | 25 – 49 | Poor — significant risk |
+| **F** | 0 – 24 | Critical — immediate action |
 
-The letter grade is then:
+</div>
 
-$$\text{Grade} = \begin{cases} A & S \geq 90 \\ B & 75 \leq S < 90 \\ C & 50 \leq S < 75 \\ D & 25 \leq S < 50 \\ F & S < 25 \end{cases}$$
+The final report is generated by **Gemini**, providing code-level fix instructions, OWASP references, and prioritized remediation steps.
 
-## How We Built It
+---
 
-### Architecture
-
-Sentinel follows a **Control Plane / Execution Plane** split:
+## 🏗️ Architecture
 
 ```
-┌─────────────────────┐        ┌──────────────────────────────┐
-│   Next.js Frontend  │◄──────►│  Flask API (Control Plane)   │
-│   Real-time UI      │        │  • /runs/start               │
-│   Agent Monitoring   │        │  • /runs/<id>/report         │
-│   Report Viewer      │        │  • Gemini remediation engine │
-└─────────────────────┘        └──────────┬───────────────────┘
-                                          │ Supabase (Realtime)
-                               ┌──────────▼───────────────────┐
-                               │  Worker (Execution Plane)     │
-                               │  • Polls for QUEUED runs      │
-                               │  • Orchestrates agent swarm   │
-                               │  • Phase 1: Spider (recon)    │
-                               │  • Phase 2: Scanners (async)  │
-                               │  • Phase 3: LLM agents (seq)  │
-                               └───────────────────────────────┘
+sentinel/
+├── backend/                  # Python Backend
+│   ├── agents/               # 10 Specialized Security Agents
+│   │   ├── base.py           #   └── BaseAgent ABC (lifecycle, events, findings)
+│   │   ├── spider.py         #   └── Attack Surface Mapper
+│   │   ├── exposure.py       #   └── Secret & File Leak Detection
+│   │   ├── headers.py        #   └── HTTP Header & TLS Auditor
+│   │   ├── cors.py           #   └── CORS Misconfiguration Tester
+│   │   ├── portscan.py       #   └── Port & Service Discovery
+│   │   ├── auth_abuse.py     #   └── Auth & Authz Bypass Engine
+│   │   ├── sqli.py           #   └── SQL Injection Fuzzer
+│   │   ├── xss.py            #   └── XSS Payload Engine
+│   │   ├── red_team.py       #   └── Autonomous AI Pen Tester
+│   │   └── llm_analysis.py   #   └── Contextual AI Analyzer
+│   ├── app.py                # Flask API (Control Plane)
+│   ├── worker.py             # Agent Orchestrator (Execution Plane)
+│   ├── report_generator.py   # Gemini-Powered Report Engine
+│   ├── summary_generator.py  # Executive Summary Generator
+│   └── modal_agents.py       # Modal Cloud Agent Runners
+│
+├── frontend/                 # Next.js 16 Dashboard
+│   └── src/
+│       ├── app/page.tsx      # Scan launcher & homepage
+│       └── app/runs/         # Real-time scan monitoring
+│
+└── supabase/
+    └── schema.sql            # Database schema + RLS policies
 ```
 
 ### Tech Stack
 
-- **Frontend:** Next.js + TypeScript with a dark cyber-security aesthetic (glassmorphism, neon accents)
-- **Backend:** Python + Flask for the REST API
-- **Agents:** Python `asyncio` with Playwright for browser automation and `aiohttp` for HTTP probing
-- **AI:** Google Gemini (`gemini-2.0-flash`) for the Red Team agent's reasoning loop and report generation
-- **Database:** Supabase (PostgreSQL) with Realtime subscriptions for live agent event streaming
-- **Deployment:** Render (single-process `multiprocessing` setup running both API + worker)
+| Layer | Technology | Purpose |
+|:---|:---|:---|
+| **Frontend** | Next.js 16, TypeScript, Tailwind CSS, Framer Motion | Real-time dashboard with dark cyber aesthetic |
+| **Backend** | Python, Flask, asyncio | REST API + async agent orchestration |
+| **AI Engine** | Google Gemini (`gemini-2.0-flash`) | Red Team reasoning, LLM analysis, report generation |
+| **Browser Automation** | Playwright (headless Chromium) | Red Team agent DOM interaction |
+| **Database** | Supabase (PostgreSQL + Realtime) | Live event streaming & finding storage |
+| **HTTP Probing** | aiohttp, BeautifulSoup | Async HTTP requests & HTML parsing |
+| **Cloud Compute** | Modal *(optional)* | Offload Playwright agents to serverless GPU |
+| **Deployment** | Render | Single-process API + worker |
 
-### The Agent Framework
+---
 
-Every agent extends a `BaseAgent` abstract class that provides:
+## 🚀 Quick Start
 
-- **Lifecycle management** — automatic `QUEUED → RUNNING → COMPLETED/FAILED` state transitions
-- **Event emission** — structured events streamed to the frontend via Supabase Realtime
-- **Finding reporting** — severity-tagged vulnerabilities with reproduction steps
-- **Progress tracking** — percentage-based progress updates for the UI
+### Prerequisites
 
-The **Red Team agent** is the most complex — it's an autonomous AI loop that:
+- **Python 3.11+** & **Node.js 18+**
+- **Supabase** project ([create one free](https://supabase.com))
+- **Google AI API key** for Gemini ([get one](https://aistudio.google.com/app/apikey))
 
-1. Launches a headless Chromium browser via Playwright
-2. Performs deep passive reconnaissance (cookie analysis, JS source scanning, API endpoint discovery)
-3. Enters an **observe → think → act** cycle powered by Gemini, deciding which tools to invoke (click, type, run JavaScript, make API requests, take screenshots)
-4. Reports findings with full reproduction steps
+### 1. Clone & Install
 
-### Worker Orchestration
+```bash
+git clone https://github.com/EKasuti/sentinel.git
+cd sentinel
+```
 
-The worker runs agents in **three phases** to balance thoroughness and rate limits:
+```bash
+# Backend
+cd backend
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+playwright install chromium
+```
 
-1. **Phase 1 — Spider** runs first to map the attack surface
-2. **Phase 2 — Scanner agents** (Exposure, Headers, CORS, Port Scan, SQLi, XSS, Auth Abuse) run concurrently via `asyncio.gather()`
-3. **Phase 3 — LLM agents** (Red Team, LLM Analysis) run sequentially to avoid API rate limit contention
+```bash
+# Frontend
+cd ../frontend
+npm install
+```
 
-## Challenges We Faced
+### 2. Configure Environment
 
-### 1. LLM Rate Limits vs. Agent Concurrency
+```bash
+# Backend — backend/.env
+cp backend/.env.example backend/.env
+```
+```env
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_KEY=your_supabase_service_key
+OPENAI_API_KEY=your_gemini_api_key
+ALLOWED_ORIGINS=http://localhost:3000
+```
 
-Our first design ran all agents in parallel — including multiple LLM-powered ones. We immediately hit Gemini's requests-per-minute limits, causing agents to crash mid-scan. The fix was the **phased orchestration** model: fast scanner agents run concurrently, but LLM agents run one at a time.
+```bash
+# Frontend — frontend/.env
+cp frontend/.env.example frontend/.env
+```
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### 2. Making the Red Team Agent Actually Useful
+### 3. Set Up Database
 
-Early versions of the Red Team agent were essentially random clickers. Getting an LLM to systematically probe a website required careful prompt engineering: we had to teach it to **prioritize** (e.g., check for exposed `.env` files before fuzzing form inputs), **stay on-domain** (we added a domain guard to prevent it from navigating away), and **avoid infinite loops** (capping the observe-think-act cycle).
+Run the SQL in `supabase/schema.sql` in your Supabase SQL Editor, then enable **Realtime** for:
+- `agent_sessions`
+- `run_events`
+- `findings`
 
-### 3. Keeping the UI in Sync
+### 4. Launch
 
-With 10+ agents running asynchronously and emitting events at different rates, keeping the frontend in sync was non-trivial. Supabase Realtime solved the *transport* problem, but we still had to design the event schema carefully — every event carries a `run_id`, `agent_type`, and structured `data` payload so the frontend can correctly route updates to the right agent lane.
+```bash
+# Terminal 1 — Backend
+cd backend
+python main.py
+# API running on http://localhost:5000
 
-### 4. False Positives
+# Terminal 2 — Frontend
+cd frontend
+npm run dev
+# Dashboard on http://localhost:3000
+```
 
-Automated scanners are notorious for false positives. Our initial XSS and SQLi agents would flag every reflected parameter as a vulnerability. We iterated on the detection heuristics, requiring agents to **verify** findings (e.g., confirming that injected JavaScript actually executes in the DOM) before reporting them — bringing the signal-to-noise ratio to an acceptable level.
+**Enter a URL → Hit Scan → Watch the agents work in real-time.** 🎯
 
-### 5. Single-Process Deployment
+---
 
-Deploying on Render's free tier meant running both the Flask API and the async worker in a single process. We used Python's `multiprocessing` module to spawn the worker as a child process, with graceful shutdown handling. It's not elegant, but it works — and it means the entire backend runs from a single `python main.py` command.
+## 🔬 Agent Framework
 
-## What We Learned
+Every agent extends a `BaseAgent` abstract class providing:
 
-- **Agent design is prompt engineering + systems engineering.** The hardest part isn't calling the LLM API — it's designing the observation/action loop, managing state across async agents, and handling the dozen ways an agent can fail silently.
-- **Phased orchestration matters.** Running everything in parallel sounds fast, but in practice, sequencing matters — reconnaissance before attack, fast checks before slow ones.
-- **Supabase Realtime is incredibly powerful** for building live dashboards. Subscribing to database changes instead of polling transformed our UX.
-- **Security tools need to be skeptical of themselves.** A scanner that reports 50 false positives is worse than useless — it trains users to ignore alerts. Verification > volume.
+```python
+class BaseAgent(ABC):
+    """
+    Lifecycle:  QUEUED → RUNNING → COMPLETED / FAILED
+    Events:     Structured events → Supabase Realtime → Dashboard
+    Findings:   Severity-tagged vulnerabilities with reproduction steps
+    Progress:   Percentage updates for the UI
+    """
 
-## What's Next
+    @abstractmethod
+    async def run(self, target_url: str, context: dict) -> list[Finding]:
+        ...
+```
 
-- **Authentication & multi-tenancy** — user accounts with scan history
-- **Scheduled recurring scans** — continuous security monitoring
-- **Custom agent configuration** — let users define which agents to run and with what parameters
-- **CI/CD integration** — run Sentinel as a GitHub Action on every deploy
+### Phased Orchestration
+
+Agents run in **three phases** to balance thoroughness with rate limits:
+
+```
+Phase 1  ──────────────►  Spider (maps attack surface)
+                              │
+Phase 2  ──────────────►  7 Scanner agents run concurrently
+          asyncio.gather()    │  via asyncio.gather()
+                              │
+Phase 3  ──────────────►  Red Team → LLM Analysis
+          sequential          │  (avoids API rate contention)
+                              ▼
+                         📊 Report Generation
+```
+
+---
+
+## 🧪 Challenges & Lessons
+
+<details>
+<summary><b>🔄 LLM Rate Limits vs. Agent Concurrency</b></summary>
+
+Running all agents in parallel — including multiple LLM-powered ones — immediately hit Gemini's RPM limits. **Fix:** Phased orchestration model separating fast scanners from LLM agents.
+</details>
+
+<details>
+<summary><b>🎯 Making the Red Team Agent Actually Useful</b></summary>
+
+Early versions were random clickers. We needed careful prompt engineering to teach the LLM to **prioritize** (check `.env` before fuzzing forms), **stay on-domain** (domain guard), and **avoid infinite loops** (capping the observe-think-act cycle).
+</details>
+
+<details>
+<summary><b>📡 Keeping 10 Agents in Sync with the UI</b></summary>
+
+With agents emitting events at different rates, keeping the frontend in sync required a structured event schema — every event carries `run_id`, `agent_type`, and structured `data` — routed to the correct agent lane via Supabase Realtime.
+</details>
+
+<details>
+<summary><b>🚨 Taming False Positives</b></summary>
+
+Initial XSS and SQLi agents flagged every reflected parameter. We added **verification** — confirming that injected JavaScript actually executes in the DOM before reporting — to maintain signal-to-noise ratio.
+</details>
+
+<details>
+<summary><b>📦 Single-Process Deployment</b></summary>
+
+Render's free tier means running Flask API + async worker in one process. Python's `multiprocessing` spawns the worker as a child with graceful shutdown. Not elegant, but the entire backend deploys with a single `python main.py`.
+</details>
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] **Authentication & multi-tenancy** — user accounts with scan history
+- [ ] **Scheduled recurring scans** — continuous security monitoring
+- [ ] **Custom agent configuration** — choose which agents to run per scan
+- [ ] **CI/CD integration** — run Sentinel as a GitHub Action on every deploy
+- [ ] **PDF report export** — downloadable security assessment reports
+- [ ] **API endpoint** — headless scanning via REST API
+
+---
+
+## 🏆 Built At
+
+<div align="center">
+
+**[TreeHacks 2026](https://www.treehacks.com)** — Stanford University's flagship hackathon.
+
+Track: **AI × Cybersecurity**
+
+</div>
+
+---
+
+<div align="center">
+
+**[⬆ Back to Top](#-sentinel)**
+
+</div>
